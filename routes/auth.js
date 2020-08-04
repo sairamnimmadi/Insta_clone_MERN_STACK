@@ -14,9 +14,9 @@ const { JWT_SECRET } = require("../config/keys");
 
 // const requiredLogin = require("../middleware/requirelogin");
 
-router.get("/", (req, res) => {
-  res.send("hello");
-});
+// router.get("/", (req, res) => {
+//   res.send("hello");
+// });
 
 // router.get("/protected", requiredLogin, (req, res) => {
 //   res.send("Hello user");
