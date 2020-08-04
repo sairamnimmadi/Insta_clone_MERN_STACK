@@ -73,6 +73,13 @@ const Home = () => {
   };
 
   const makeComment = (text, postId) => {
+    if (text.length == 0 || text === null) {
+      M.toast({
+        html: "Cannot Post Empty Comment",
+        classes: "#f44336 red",
+      });
+      return;
+    }
     fetch("/comment", {
       method: "put",
       headers: {
@@ -175,155 +182,168 @@ const Home = () => {
 
   return (
     <>
-      {data.length ? (
-        <div className="home">
-          {data.map((item) => {
-            return (
-              <div className="card home-card" key={item._id}>
-                <h5 style={{ padding: "1.5%" }}>
-                  <Link
-                    to={
-                      item.postedBy._id !== state._id
-                        ? "/profile/" + item.postedBy._id
-                        : "/profile"
-                    }
-                    style={{ textDecoration: "none" }}
-                  >
+      {data ? (
+        data.length ? (
+          <div className="home">
+            {data.map((item) => {
+              return (
+                <div className="card home-card" key={item._id}>
+                  <h5 style={{ padding: "1.5%" }}>
+                    <Link
+                      to={
+                        item.postedBy._id !== state._id
+                          ? "/profile/" + item.postedBy._id
+                          : "/profile"
+                      }
+                      style={{ textDecoration: "none" }}
+                    >
+                      <img
+                        src={item.postedBy.pic}
+                        alt=""
+                        style={{
+                          height: "35px",
+                          width: "35px",
+                          borderRadius: "17.5px",
+                          marginRight: "3%",
+                          objectFit: "fill",
+                        }}
+                      />
+                      {item.postedBy.name}
+                    </Link>
+                    {item.postedBy._id === (state && state._id) && (
+                      <i
+                        className="material-icons"
+                        style={{
+                          cursor: "pointer",
+                          color: "red",
+                          float: "right",
+                          marginTop: "1%",
+                        }}
+                        onClick={() => deletePost(item._id)}
+                      >
+                        delete
+                      </i>
+                    )}
+                    {state.savedposts && state.savedposts.includes(item._id) ? (
+                      <></>
+                    ) : (
+                      <i
+                        className="material-icons"
+                        style={{
+                          cursor: "pointer",
+                          float: "right",
+                          color: "rgb(95, 110, 227)",
+                          marginTop: "1%",
+                        }}
+                        onClick={() => savepost(item._id)}
+                      >
+                        save
+                      </i>
+                    )}
+                  </h5>
+                  <div className="card-image">
                     <img
-                      src={item.postedBy.pic}
+                      style={{ objectFit: "cover" }}
+                      src={item.photo}
                       alt=""
-                      style={{
-                        height: "35px",
-                        width: "35px",
-                        borderRadius: "17.5px",
-                        marginRight: "3%",
-                        objectFit: "fill",
-                      }}
                     />
-                    {item.postedBy.name}
-                  </Link>
-                  {item.postedBy._id === (state && state._id) && (
-                    <i
-                      className="material-icons"
-                      style={{
-                        cursor: "pointer",
-                        color: "red",
-                        float: "right",
-                        marginTop: "1%",
-                      }}
-                      onClick={() => deletePost(item._id)}
-                    >
-                      delete
-                    </i>
-                  )}
-                  {state.savedposts && state.savedposts.includes(item._id) ? (
-                    <></>
-                  ) : (
-                    <i
-                      className="material-icons"
-                      style={{
-                        cursor: "pointer",
-                        float: "right",
-                        color: "rgb(95, 110, 227)",
-                        marginTop: "1%",
-                      }}
-                      onClick={() => savepost(item._id)}
-                    >
-                      save
-                    </i>
-                  )}
-                </h5>
-                <div className="card-image">
-                  <img style={{ objectFit: "cover" }} src={item.photo} alt="" />
-                </div>
-                <div className="card-content">
-                  {item.likes.includes(state._id) ? (
-                    <i
-                      className="material-icons"
-                      onClick={() => {
-                        unlikePost(item._id);
-                      }}
-                      style={{ cursor: "pointer", color: "red" }}
-                    >
-                      favorite
-                    </i>
-                  ) : (
-                    <i
-                      className="material-icons"
-                      onClick={() => {
-                        likePost(item._id);
-                      }}
-                      style={{ cursor: "pointer" }}
-                    >
-                      favorite_border
-                    </i>
-                  )}
-                  <h6>{item.likes.length} Likes</h6>
-                  <h6>{item.title}</h6>
-                  <p>{item.body}</p>
-                  {item.comments.map((record) => {
-                    return (
-                      <h6 key={record._id}>
-                        <div className="row mt-3">
-                          <div className="col-10">
-                            <span
-                              style={{
-                                fontWeight: "bolder",
-                                marginRight: "2%",
-                              }}
-                            >
-                              {record.postedBy.name}
-                            </span>
-                            {record.text}
-                          </div>
-                          <div className="col-2">
-                            {record.postedBy._id === state._id && (
-                              <span>
-                                <i
-                                  className="material-icons"
-                                  style={{
-                                    cursor: "pointer",
-                                    color: "red",
-                                    // float: "left",
-                                    marginRight: "2%",
-                                  }}
-                                  onClick={() => {
-                                    // console.log(item._id, record._id);
-                                    deleteComment(item._id, record._id);
-                                  }}
-                                >
-                                  delete
-                                </i>
+                  </div>
+                  <div className="card-content">
+                    {item.likes.includes(state._id) ? (
+                      <i
+                        className="material-icons"
+                        onClick={() => {
+                          unlikePost(item._id);
+                        }}
+                        style={{ cursor: "pointer", color: "red" }}
+                      >
+                        favorite
+                      </i>
+                    ) : (
+                      <i
+                        className="material-icons"
+                        onClick={() => {
+                          likePost(item._id);
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
+                        favorite_border
+                      </i>
+                    )}
+                    <h6>{item.likes.length} Likes</h6>
+                    <h6>{item.title}</h6>
+                    <p>{item.body}</p>
+                    {item.comments.map((record) => {
+                      return (
+                        <h6 key={record._id}>
+                          <div className="row mt-3">
+                            <div className="col-10">
+                              <span
+                                style={{
+                                  fontWeight: "bolder",
+                                  marginRight: "2%",
+                                }}
+                              >
+                                {record.postedBy.name}
                               </span>
-                            )}
+                              {record.text}
+                            </div>
+                            <div className="col-2">
+                              {record.postedBy._id === state._id && (
+                                <span>
+                                  <i
+                                    className="material-icons"
+                                    style={{
+                                      cursor: "pointer",
+                                      color: "red",
+                                      // float: "left",
+                                      marginRight: "2%",
+                                    }}
+                                    onClick={() => {
+                                      // console.log(item._id, record._id);
+                                      deleteComment(item._id, record._id);
+                                    }}
+                                  >
+                                    delete
+                                  </i>
+                                </span>
+                              )}
+                            </div>
                           </div>
+                        </h6>
+                      );
+                    })}
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        makeComment(e.target[0].value, item._id);
+                        e.target[0].value = "";
+                      }}
+                      style={{ height: "60px" }}
+                    >
+                      <div className="row">
+                        <div className="input-field col-9 col-md-10">
+                          <i class="material-icons prefix">create</i>
+                          <input type="text" placeholder="add a comment" />
                         </div>
-                      </h6>
-                    );
-                  })}
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      makeComment(e.target[0].value, item._id);
-                      e.target[0].value = "";
-                    }}
-                    style={{ height: "60px" }}
-                  >
-                    <div className="row">
-                      <div className="input-field col-9 col-md-10">
-                        <i class="material-icons prefix">create</i>
-                        <input type="text" placeholder="add a comment" />
+                        <div className="input-field col-3 col-md-2">
+                          <button className="btn btn-secondary">Post</button>
+                        </div>
                       </div>
-                      <div className="input-field col-3 col-md-2">
-                        <button className="btn btn-secondary">Post</button>
-                      </div>
-                    </div>
-                  </form>
+                    </form>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="empty offset-3 mt-5">
+            <div>
+              <i className="fa fa-frown-o fa-5x offset-1"></i>
+            </div>
+            <div>No Saved posts Yet</div>
+          </div>
+        )
       ) : (
         <Loading />
       )}
