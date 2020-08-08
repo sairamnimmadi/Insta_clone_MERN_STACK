@@ -114,7 +114,10 @@ const UserProfile = () => {
             </div>
           </div>
         ) : (
-          <div className="profile col-12 col-lg-8 offset-lg-2">
+          <div
+            className="profile col-12 col-lg-8 offset-lg-2"
+            style={{ overflowX: "hidden" }}
+          >
             <div
               className="row"
               style={{
@@ -131,18 +134,19 @@ const UserProfile = () => {
                       width: "150px",
                       height: "150px",
                       borderRadius: "80px",
+                      objectFit: "cover",
                     }}
                   />
                 </div>
 
-                <div className="mt-5 col-md-12">
+                <div className="mt-5 col-12">
                   <h1>{userProfile.user.name}</h1>
                 </div>
-                <div className="col-md-12">
+                <div className="col-12">
                   <h3>{userProfile.user.email}</h3>
                 </div>
               </div>
-              <div className="col-md-5 mt-5">
+              <div className="col-md-5 mt-md-5">
                 <div className="row">
                   <div className="col-2 offset-1">
                     <div className="row" style={{ marginLeft: "2%" }}>
@@ -216,7 +220,7 @@ const UserProfile = () => {
           </div>
         )
       ) : (
-        <div className="load col-12 offset-md-4">
+        <div className="load col-12 offset-md-4" style={{ marginTop: "100px" }}>
           <span
             className="fa fa-refresh fa-spin fa-5x fa-fw text-primary"
             style={{ marginLeft: "10%" }}

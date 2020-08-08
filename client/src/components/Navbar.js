@@ -216,18 +216,21 @@ const NavBar = () => {
             <span style={{ marginLeft: "-20px" }}>Edit Profie</span>
           </Link>
         </li>,
-        <li key="6">
+        <li
+          key="6"
+          className="sidenav-close"
+          onClick={() => {
+            localStorage.removeItem("jwt");
+            localStorage.removeItem("user");
+            dispatch({ type: "CLEAR" });
+            history.push("/signin");
+          }}
+        >
           <button
             type="button"
             data-tip="Log Out"
             className="btn btn-danger setlog"
             style={{ borderRadius: "10px" }}
-            onClick={() => {
-              localStorage.removeItem("jwt");
-              localStorage.removeItem("user");
-              dispatch({ type: "CLEAR" });
-              history.push("/signin");
-            }}
           >
             <i
               className="fa fa-sign-out logout"
