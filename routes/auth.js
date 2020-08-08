@@ -21,7 +21,7 @@ const crypto = require("crypto");
 const sendgridTransport = require("nodemailer-sendgrid-transport");
 
 const Verifier = require("email-verifier");
-const { VERIFIER_API } = require("../config/keys");
+const { VERIFIER_API, REDIRECTION } = require("../config/keys");
 
 let verifier = new Verifier(VERIFIER_API);
 
@@ -77,7 +77,7 @@ router.post("/signup", (req, res) => {
                       subject: "signup success",
                       html: `
                         <h1>Welcome to Insta_clone </h1>
-                        <h4>Click on this <a href="http://localhost:3000/activate/${token}">link</a> to activate your account</h4>
+                        <h4>Click on this <a href="${REDIRECTION}/activate/${token}">link</a> to activate your account</h4>
                         `,
                     });
                     res.json({ message: "Saved Successfully" });
@@ -154,7 +154,7 @@ router.post("/reset-password", (req, res) => {
           subject: "Password Reset",
           html: `
           <p>You requested for passwordreset </p>
-          <h4>Click on this <a href="http://localhost:3000/reset/${token}">link</a> to reset password</h4>
+          <h4>Click on this <a href="${REDIRECTION}/reset/${token}">link</a> to reset password</h4>
           `,
         });
         res.json({ message: "Check Your Email for details" });
@@ -227,7 +227,7 @@ router.post("/reactivate", (req, res) => {
           subject: "Activate account",
           html: `
           <p>You requested for reactivate your account </p>
-          <h4>Click on this <a href="http://localhost:3000/activate/${token}">link</a> to activate your account</h4>
+          <h4>Click on this <a href="${REDIRECTION}/activate/${token}">link</a> to activate your account</h4>
           `,
         });
         res.json({ message: "Check Your Email for details" });

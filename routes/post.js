@@ -10,10 +10,12 @@ const cloudinary = require("cloudinary");
 
 const Post = mongoose.model("Post");
 
+const { CLOUD_NAME, API_SECRET, CLOUD_API } = require("../config/keys");
+
 cloudinary.config({
-  cloud_name: "cloneinsta",
-  api_key: "268761656681155",
-  api_secret: "XuSZvPTBnAwr14KrKY0Qhx4j0y8",
+  cloud_name: CLOUD_NAME,
+  api_key: CLOUD_API,
+  api_secret: API_SECRET,
 });
 
 router.get("/allpost", requireLogin, (req, res) => {
