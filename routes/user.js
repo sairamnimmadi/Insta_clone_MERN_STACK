@@ -110,7 +110,7 @@ router.put("/updatepic", requireLogin, (req, res) => {
 
 router.put("/editprofile", requireLogin, (req, res) => {
   if (req.body.pic !== req.body.oldpic) {
-    console.log(req.body.pic, req.body.oldpic, req.body.publicId);
+    // console.log(req.body.pic, req.body.oldpic, req.body.publicId);
     cloudinary.v2.uploader.destroy(req.body.publicId);
   }
   User.findByIdAndUpdate(
@@ -159,7 +159,7 @@ router.put("/savedposts", requireLogin, (req, res) => {
 });
 
 router.put("/deletesavedposts", requireLogin, (req, res) => {
-  console.log(req.body.id);
+  // console.log(req.body.id);
   User.findByIdAndUpdate(
     { _id: req.user._id },
     {
@@ -175,12 +175,24 @@ router.put("/deletesavedposts", requireLogin, (req, res) => {
     .populate("postedBy", "_id name pic")
     .populate("comments.postedBy", "_id name pic")
     .then((result) => {
-      console.log(result);
+      // console.log(result);
       res.json(result);
     })
     .catch((err) => {
       return res.json({ error: err });
     });
+});
+
+router.post("/search-users", (req, res) => {
+  if (req.body.query === "")
+    return res.status(422).json({ error: "Please Enter a User" });
+  let userPattern = new RegExp("^" + req.body.query);
+  User.find({ name: { $regex: userPattern } })
+    .select("_id name pic")
+    .then((user) => {
+      res.json({ user });
+    })
+    .catch((err) => console.log(err));
 });
 
 module.exports = router;

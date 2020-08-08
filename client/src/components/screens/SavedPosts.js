@@ -2,11 +2,15 @@ import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../../App";
 import { Link } from "react-router-dom";
 import Loading from "../LoadingComponent";
+import M from "materialize-css";
+import ReactTooltip from "react-tooltip";
+import { Online, Offline } from "react-detect-offline";
+import Nonet from "./Offline";
 
 const SavedPosts = () => {
   const [data, setData] = useState(undefined);
   const { state, dispatch } = useContext(UserContext);
-  //   console.log(state);
+  // console.log(state);
   useEffect(() => {
     fetch("/showsavedposts", {
       headers: {
@@ -33,7 +37,7 @@ const SavedPosts = () => {
     })
       .then((res) => res.json())
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         const newData = data.map((item) => {
           if (item._id === result._id) {
             return result;
@@ -72,6 +76,13 @@ const SavedPosts = () => {
   };
 
   const makeComment = (text, postId) => {
+    if (text.length === 0 || text === null) {
+      M.toast({
+        html: "Cannot Post Empty Comment",
+        classes: "#f44336 red",
+      });
+      return;
+    }
     fetch("/comment", {
       method: "put",
       headers: {
@@ -176,17 +187,6 @@ const SavedPosts = () => {
                       />
                       {item.postedBy.name}
                     </Link>
-                    <i
-                      className="fa fa-window-close fa-lg"
-                      aria-hidden="true"
-                      style={{
-                        float: "right",
-                        color: "red",
-                        marginTop: "1.2%",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => removesavedposts(item._id)}
-                    ></i>
                   </h5>
                   <div className="card-image">
                     <img
@@ -217,6 +217,18 @@ const SavedPosts = () => {
                         favorite_border
                       </i>
                     )}
+                    <i
+                      data-tip="remove from saved post"
+                      className="small material-icons"
+                      style={{
+                        float: "right",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => removesavedposts(item._id)}
+                    >
+                      bookmark
+                    </i>
+
                     <h6>{item.likes.length} Likes</h6>
                     <h6>{item.title}</h6>
                     <p>{item.body}</p>
@@ -272,25 +284,42 @@ const SavedPosts = () => {
                           <input type="text" placeholder="add a comment" />
                         </div>
                         <div className="input-field col-3 col-md-2">
-                          <button className="btn btn-secondary">Post</button>
+                          <button
+                            href="#"
+                            data-tip="Post comment"
+                            className="btn-floating #1e88e5 blue darken-1 text-darken-5 pulse"
+                            style={{ outline: "none" }}
+                          >
+                            <i className="material-icons right white-text ">
+                              send
+                            </i>
+                          </button>
                         </div>
                       </div>
                     </form>
                   </div>
+                  <ReactTooltip />
                 </div>
               );
             })}
           </div>
         ) : (
-          <div className="empty offset-3 mt-5">
+          <div className="empty">
             <div>
-              <i className="fa fa-frown-o fa-5x offset-1"></i>
+              <i className="fa fa-frown-o fa-5x offset-md-5 offset-3"></i>
             </div>
-            <div>No Saved posts Yet</div>
+            <div className="offset-1 offset-md-4">Save any post to see</div>
           </div>
         )
       ) : (
-        <Loading />
+        <>
+          <Online>
+            <Loading />
+          </Online>
+          <Offline>
+            <Nonet />
+          </Offline>
+        </>
       )}
     </>
   );

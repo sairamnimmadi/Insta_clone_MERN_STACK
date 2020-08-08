@@ -15,6 +15,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  resetToken: String,
+  expireToken: Date,
   pic: {
     type: String,
     default:
@@ -23,6 +25,9 @@ const userSchema = new mongoose.Schema({
   followers: [{ type: ObjectId, ref: "User" }],
   following: [{ type: ObjectId, ref: "User" }],
   savedposts: [{ type: ObjectId, ref: "Post" }],
+  verified: String,
+  verfiedToken: String,
+  expireverifyToken: Date,
 });
 
 mongoose.model("User", userSchema);

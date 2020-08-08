@@ -6,14 +6,22 @@ const mongoose = require("mongoose");
 
 const requireLogin = require("../middleware/requirelogin");
 const requirelogin = require("../middleware/requirelogin");
+const cloudinary = require("cloudinary");
 
 const Post = mongoose.model("Post");
+
+cloudinary.config({
+  cloud_name: "cloneinsta",
+  api_key: "268761656681155",
+  api_secret: "XuSZvPTBnAwr14KrKY0Qhx4j0y8",
+});
 
 router.get("/allpost", requireLogin, (req, res) => {
   Post.find()
     .populate("postedBy", "_id name pic")
 
     .populate("comments.postedBy", "_id name pic")
+    .sort("-createdAt")
     .then((posts) => {
       res.json({ posts });
     })
@@ -26,6 +34,7 @@ router.get("/getsubpost", requireLogin, (req, res) => {
     .populate("postedBy", "_id name pic")
 
     .populate("comments.postedBy", "_id name pic")
+    .sort("-createdAt")
     .then((posts) => {
       res.json({ posts });
     })
@@ -138,6 +147,8 @@ router.put("/comment", requireLogin, (req, res) => {
 });
 
 router.delete("/deletepost/:postId", requirelogin, (req, res) => {
+  // console.log(req.body.publicId);
+  cloudinary.v2.uploader.destroy(req.body.publicId);
   Post.findOne({ _id: req.params.postId })
     .populate("postedBy", "_id")
     .exec((err, post) => {
@@ -182,6 +193,7 @@ router.get("/showsavedposts", requireLogin, (req, res) => {
   Post.find({ _id: { $in: req.user.savedposts } })
     .populate("postedBy", "_id name pic")
     .populate("comments.postedBy", "_id name pic")
+    .sort("-createdAt")
     .then((posts) => {
       res.json({ posts: posts });
     })

@@ -14,6 +14,10 @@ import UserProfile from "./components/UserProfile";
 import SubUserPost from "./components/screens/SubscribedUser";
 import EditProfile from "./components/screens/Editprofile";
 import SavedPosts from "./components/screens/SavedPosts";
+import Reset from "./components/screens/Reset";
+import Newpassword from "./components/screens/Newpassword";
+import Activate from "./components/screens/Activate";
+import Reactive from "./components/screens/Reacitvate";
 
 export const UserContext = createContext();
 
@@ -27,7 +31,11 @@ const Routing = () => {
     if (user) {
       dispatch({ type: "USER", payload: user });
     } else {
-      history.push("/signin");
+      if (
+        !history.location.pathname.startsWith("/reset") &&
+        !history.location.pathname.startsWith("/activate")
+      )
+        history.push("/signin");
     }
   }, []);
   return (
@@ -58,6 +66,18 @@ const Routing = () => {
       </Route>
       <Route path="/showsavedposts">
         <SavedPosts />
+      </Route>
+      <Route exact path="/reset">
+        <Reset />
+      </Route>
+      <Route path="/reset/:token">
+        <Newpassword />
+      </Route>
+      <Route path="/activate/:token">
+        <Activate />
+      </Route>
+      <Route path="/activate">
+        <Reactive />
       </Route>
     </Switch>
   );

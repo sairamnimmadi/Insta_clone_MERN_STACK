@@ -2,7 +2,9 @@ import React, { useEffect, useState, useContext } from "react";
 import { UserContext } from "../../App";
 import Loading from "../LoadingComponent";
 import M from "materialize-css";
-
+import { Offline, Online } from "react-detect-offline";
+import Nonet from "./Offline";
+import ReactTooltip from "react-tooltip";
 var deflink =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTjA0Lpsg840JNGLaPgVWM9QofkvAYdFPLb-g&usqp=CAU";
 
@@ -55,107 +57,141 @@ const Profile = () => {
       });
   };
   return (
-    <div className="profile col-12 col-lg-8 offset-lg-2">
-      <div
-        className="row"
-        style={{
-          margin: "3% 0%",
-          borderBottom: "1px solid grey",
-        }}
-      >
-        <div className="row col-12 col-md-7">
-          <div className="propic col col-md-12">
-            <img
-              src={state ? state.pic : <Loading />}
-              alt=""
-              style={{
-                width: "150px",
-                height: "150px",
-                borderRadius: "80px",
-                objectFit: "cover",
-              }}
-            />
-            {state && state.pic !== deflink ? (
-              <div>
-                <button
-                  className="btn btn-primary mt-4"
-                  onClick={() => deletePic()}
-                >
-                  Delete profile pic
-                </button>
+    <>
+      <Online>
+        <div className="profile col-12 col-lg-8 offset-lg-2">
+          <div
+            className="row"
+            style={{
+              margin: "3% 0%",
+              borderBottom: "1px solid grey",
+            }}
+          >
+            <div className="row col-12 col-md-7">
+              <div className="propic col col-md-12">
+                <img
+                  src={state ? state.pic : <Loading />}
+                  alt=""
+                  style={{
+                    width: "150px",
+                    height: "150px",
+                    borderRadius: "80px",
+                    objectFit: "cover",
+                  }}
+                />
+                {state && state.pic !== deflink ? (
+                  <div>
+                    <button
+                      data-tip="Delete Profile Pic"
+                      className="btn-floating #1e88e5 red darken-1 text-darken-5 pulse mt-3 offset-3 offset-md-1"
+                      style={{ outline: "none" }}
+                      onClick={() => deletePic()}
+                    >
+                      <i className="material-icons right white-text ">delete</i>
+                    </button>
+                    <ReactTooltip />
+                  </div>
+                ) : (
+                  <></>
+                )}
               </div>
-            ) : (
-              <></>
-            )}
-          </div>
-          <div className="mt-5 col-md-12">
-            <h1>{state ? state.name : <Loading />}</h1>
-          </div>
-          <div className="col-md-12">
-            <h3>{state ? state.email : <Loading />}</h3>
-          </div>
-        </div>
-        <div className="col-md-5 mt-5">
-          <div className="row">
-            <div className="col-2 offset-1">
-              <div className="row" style={{ marginLeft: "2%" }}>
-                <h4>
-                  {mypics ? (
-                    mypics.length
+              <div className="mt-5 col-12">
+                <h1>
+                  {state ? (
+                    state.name
                   ) : (
                     <span className="fa fa-spinner fa-pulse fa fa-fw text-primary"></span>
                   )}
-                </h4>
+                </h1>
               </div>
-              <div className="row">
-                <h4>Posts</h4>
-              </div>
-            </div>
-            <div className="col-2 offset-1">
-              <div className="row" style={{ marginLeft: "40%" }}>
-                <h4>{state ? state.followers.length : 0}</h4>
-              </div>
-              <div className="row">
-                <h4>Followers</h4>
+              <div className="col-12">
+                <h3>
+                  {state ? (
+                    state.email
+                  ) : (
+                    <span className="fa fa-spinner fa-pulse fa fa-fw text-primary"></span>
+                  )}
+                </h3>
               </div>
             </div>
-            <div className="col-2 offset-2">
-              <div className="row" style={{ marginLeft: "50%" }}>
-                <h4>{state ? state.following.length : 0}</h4>
-              </div>
+            <div className="col-md-5 mt-md-5">
               <div className="row">
-                <h4>Following</h4>
+                <div className="col-2 offset-1">
+                  <div className="row" style={{ marginLeft: "2%" }}>
+                    <h4>
+                      {mypics ? (
+                        mypics.length
+                      ) : (
+                        <span className="fa fa-spinner fa-pulse fa fa-fw text-primary"></span>
+                      )}
+                    </h4>
+                  </div>
+                  <div className="row">
+                    <h4>Posts</h4>
+                  </div>
+                </div>
+                <div className="col-2 offset-1">
+                  <div className="row" style={{ marginLeft: "40%" }}>
+                    <h4>
+                      {state ? (
+                        state.followers.length
+                      ) : (
+                        <span className="fa fa-spinner fa-pulse fa fa-fw text-primary"></span>
+                      )}
+                    </h4>
+                  </div>
+                  <div className="row">
+                    <h4>Followers</h4>
+                  </div>
+                </div>
+                <div className="col-2 offset-2">
+                  <div className="row" style={{ marginLeft: "50%" }}>
+                    <h4>
+                      {state ? (
+                        state.following.length
+                      ) : (
+                        <span className="fa fa-spinner fa-pulse fa fa-fw text-primary"></span>
+                      )}
+                    </h4>
+                  </div>
+                  <div className="row">
+                    <h4>Following</h4>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+          {mypics ? (
+            mypics.length !== 0 ? (
+              <div className="gallery row">
+                {mypics.map((item) => {
+                  return (
+                    <img
+                      className="item col-4 mt-4"
+                      src={item.photo}
+                      key={item._id}
+                      alt={item.title}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="empty offset-3 offset-md-5">
+                <div>
+                  <i className="fa fa-frown-o fa-5x"></i>
+                </div>
+                <div>No posts Yet</div>
+              </div>
+            )
+          ) : (
+            <Loading />
+          )}
         </div>
-      </div>
-      {mypics ? (
-        mypics.length !== 0 ? (
-          <div className="gallery row">
-            {mypics.map((item) => {
-              return (
-                <img
-                  className="item col-4 mt-4"
-                  src={item.photo}
-                  key={item._id}
-                  alt={item.title}
-                />
-              );
-            })}
-          </div>
-        ) : (
-          <div className="empty offset-3 offset-md-5">
-            <div>
-              <i className="fa fa-frown-o fa-5x"></i>
-            </div>
-            <div>No posts Yet</div>
-          </div>
-        )
-      ) : (
-        <Loading />
-      )}
-    </div>
+      </Online>
+      <Offline>
+        <Nonet />
+      </Offline>
+    </>
   );
 };
 

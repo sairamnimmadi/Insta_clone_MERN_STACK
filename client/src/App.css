@@ -8,10 +8,6 @@ h2 {
   font-family: "Grand Hotel", cursive;
 }
 
-.mycard {
-  margin-top: 50px;
-}
-
 .auth-card {
   padding: 20px;
   text-align: center;
@@ -82,4 +78,44 @@ h2 {
   .symbol {
     font-size: 50px;
   }
+  .losty {
+    margin-left: 100px;
+  }
+  .set {
+    margin-left: -5px;
+  }
+  .stack {
+    color: gray;
+    margin-left: -4px;
+  }
+  .setlog {
+    margin-left: 25px;
+  }
+  #modclose {
+    margin-right: 35%;
+  }
+}
+.collection-item {
+  width: 100%;
+}
+.logout {
+  margin-top: -100%;
+}
+
+@media screen and (min-width: 600px) {
+  .stack {
+    margin-top: -150%;
+  }
+  .set {
+    margin-top: -30%;
+  }
+  .setlog {
+    margin-top: -18%;
+  }
+  #modclose {
+    margin-right: 46%;
+  }
+}
+.sidenav {
+  width: 225px;
 }

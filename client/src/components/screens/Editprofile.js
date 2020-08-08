@@ -4,6 +4,9 @@ import { Link, useHistory } from "react-router-dom";
 
 import M from "materialize-css";
 import { UserContext } from "../../App";
+import { Online, Offline } from "react-detect-offline";
+import Nonet from "./Offline";
+import ReactTooltip from "react-tooltip";
 
 var deflink =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTjA0Lpsg840JNGLaPgVWM9QofkvAYdFPLb-g&usqp=CAU";
@@ -90,41 +93,57 @@ const EditProfile = () => {
     }
   };
   return (
-    <div className="mycard" onSubmit={(e) => (e.target.value = "")}>
-      <div className="card auth-card input-field">
-        <h2>Edit Profile</h2>
-        <input
-          type="text"
-          placeholder="name"
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
-        />
-        <div className="file-field input-field">
-          <div className="btn #64b5f6 blue darken-1">
-            <span>
-              <h6 style={{ paddingTop: "5%" }}>Updload Profile pic</h6>
+    <>
+      <Online>
+        <div className="mycard">
+          <div className="card auth-card input-field">
+            <h2>Edit Profile</h2>
+            <img
+              data-tip="click on camera to change profile pic"
+              className="offset-2 offset-md-3"
+              src={state && state.pic}
+              alt=""
+              style={{
+                height: "200px",
+                width: "200px",
+                objectFit: "cover",
+                borderRadius: "200px",
+              }}
+            />
+            <span className="file-field validate">
+              <i className="small material-icons">add_a_photo</i>
+              <input
+                type="file"
+                onChange={(e) => setImage(e.target.files[0])}
+              />
             </span>
-            <input type="file" onChange={(e) => setImage(e.target.files[0])} />
+            <input
+              type="text"
+              placeholder="name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
+            />
+            <button
+              className="btn waves-effect waves-light #64b5f6 blue darken-1 col-3 offset-4 mt-4"
+              onClick={() => PostData()}
+            >
+              Edit
+            </button>
+            <div style={{ marginTop: "5%" }}>
+              <h5>
+                <Link to="/signin">Go to Home ?</Link>
+              </h5>
+            </div>
           </div>
-          <div className="file-path-wrapper">
-            <input className="file-path validate" type="text" />
-          </div>
+          <ReactTooltip />
         </div>
-        <button
-          className="btn waves-effect waves-light #64b5f6 blue darken-1 col-3 offset-4"
-          onClick={() => PostData()}
-        >
-          Edit
-        </button>
-        <div style={{ marginTop: "5%" }}>
-          <h5>
-            <Link to="/signin">Go to Home ?</Link>
-          </h5>
-        </div>
-      </div>
-    </div>
+      </Online>
+      <Offline>
+        <Nonet />
+      </Offline>
+    </>
   );
 };
 

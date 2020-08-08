@@ -3,10 +3,14 @@ import { UserContext } from "../../App";
 import { Link } from "react-router-dom";
 import Loading from "../LoadingComponent";
 import M from "materialize-css";
+import ReactTooltip from "react-tooltip";
+import { Online, Offline } from "react-detect-offline";
+import Nonet from "./Offline";
 
 const Home = () => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(undefined);
   const { state, dispatch } = useContext(UserContext);
+  const [extracomments, setExtracomments] = useState(true);
   // console.log(state);
   useEffect(() => {
     fetch("/allpost", {
@@ -73,7 +77,7 @@ const Home = () => {
   };
 
   const makeComment = (text, postId) => {
-    if (text.length == 0 || text === null) {
+    if (text.length === 0 || text === null) {
       M.toast({
         html: "Cannot Post Empty Comment",
         classes: "#f44336 red",
@@ -110,12 +114,17 @@ const Home = () => {
       .catch((error) => console.log(error));
   };
 
-  const deletePost = (postId) => {
+  const deletePost = (postId, publicId) => {
+    // console.log(publicId);
     fetch(`/deletepost/${postId}`, {
       method: "delete",
       headers: {
         Authorization: "Bearer " + localStorage.getItem("jwt"),
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        publicId,
+      }),
     })
       .then((res) => res.json())
       .then((result) => {
@@ -180,6 +189,27 @@ const Home = () => {
   };
   // console.log(data);
 
+  const removesavedposts = (id) => {
+    fetch("/deletesavedposts", {
+      method: "put",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ ...state, saved: result.savedposts }),
+        );
+        dispatch({ type: "ADDSAVEDPOSTS", payload: result.savedposts });
+      });
+  };
+
   return (
     <>
       {data ? (
@@ -190,6 +220,7 @@ const Home = () => {
                 <div className="card home-card" key={item._id}>
                   <h5 style={{ padding: "1.5%" }}>
                     <Link
+                      data-tip="click to check profile"
                       to={
                         item.postedBy._id !== state._id
                           ? "/profile/" + item.postedBy._id
@@ -210,8 +241,10 @@ const Home = () => {
                       />
                       {item.postedBy.name}
                     </Link>
+
                     {item.postedBy._id === (state && state._id) && (
                       <i
+                        data-tip="delete post"
                         className="material-icons"
                         style={{
                           cursor: "pointer",
@@ -219,25 +252,14 @@ const Home = () => {
                           float: "right",
                           marginTop: "1%",
                         }}
-                        onClick={() => deletePost(item._id)}
+                        onClick={() =>
+                          deletePost(
+                            item._id,
+                            item.photo.split("/")[7].split(".")[0],
+                          )
+                        }
                       >
                         delete
-                      </i>
-                    )}
-                    {state.savedposts && state.savedposts.includes(item._id) ? (
-                      <></>
-                    ) : (
-                      <i
-                        className="material-icons"
-                        style={{
-                          cursor: "pointer",
-                          float: "right",
-                          color: "rgb(95, 110, 227)",
-                          marginTop: "1%",
-                        }}
-                        onClick={() => savepost(item._id)}
-                      >
-                        save
                       </i>
                     )}
                   </h5>
@@ -251,6 +273,7 @@ const Home = () => {
                   <div className="card-content">
                     {item.likes.includes(state._id) ? (
                       <i
+                        data-tip="Unlike"
                         className="material-icons"
                         onClick={() => {
                           unlikePost(item._id);
@@ -261,6 +284,7 @@ const Home = () => {
                       </i>
                     ) : (
                       <i
+                        data-tip="Like"
                         className="material-icons"
                         onClick={() => {
                           likePost(item._id);
@@ -270,10 +294,40 @@ const Home = () => {
                         favorite_border
                       </i>
                     )}
+                    {state.savedposts && state.savedposts.includes(item._id) ? (
+                      <i
+                        data-tip="save post"
+                        className="fa fa-bookmark fa-2x"
+                        style={{
+                          cursor: "pointer",
+                          float: "right",
+                          marginTop: "1%",
+                        }}
+                        onClick={() => removesavedposts(item._id)}
+                      ></i>
+                    ) : (
+                      <i
+                        data-tip="save post"
+                        className="fa fa-bookmark-o fa-2x"
+                        style={{
+                          cursor: "pointer",
+                          float: "right",
+                          marginTop: "1%",
+                        }}
+                        onClick={() => savepost(item._id)}
+                      ></i>
+                    )}
                     <h6>{item.likes.length} Likes</h6>
                     <h6>{item.title}</h6>
                     <p>{item.body}</p>
-                    {item.comments.map((record) => {
+                    {item.comments.length ? (
+                      <></>
+                    ) : (
+                      <h6 className="mt-2">
+                        <bold>Be the first to comment</bold>
+                      </h6>
+                    )}
+                    {item.comments.slice(0, 3).map((record) => {
                       return (
                         <h6 key={record._id}>
                           <div className="row mt-3">
@@ -290,17 +344,15 @@ const Home = () => {
                             </div>
                             <div className="col-2">
                               {record.postedBy._id === state._id && (
-                                <span>
+                                <span data-tip="delete comment">
                                   <i
                                     className="material-icons"
                                     style={{
                                       cursor: "pointer",
                                       color: "red",
-                                      // float: "left",
                                       marginRight: "2%",
                                     }}
                                     onClick={() => {
-                                      // console.log(item._id, record._id);
                                       deleteComment(item._id, record._id);
                                     }}
                                   >
@@ -313,6 +365,81 @@ const Home = () => {
                         </h6>
                       );
                     })}
+                    {item.comments.length > 3 && (
+                      <>
+                        <button
+                          className="btn btn-secondary"
+                          data-toggle="collapse"
+                          data-target="#collapseExample"
+                          style={{ color: "white" }}
+                          onClick={() => {
+                            setExtracomments(!extracomments);
+                          }}
+                        >
+                          {extracomments ? (
+                            <>
+                              <h6>
+                                View {item.comments.length - 3}{" "}
+                                {item.comments.length - 3 > 1
+                                  ? "more comments"
+                                  : "more comment"}
+                                <i className="fa fa-sort-down ml-2"></i>
+                              </h6>
+                            </>
+                          ) : (
+                            <i className="fa fa-sort-up"></i>
+                          )}
+                        </button>
+                        <div className="collapse" id="collapseExample">
+                          <div className="card card-body">
+                            {item.comments
+                              .slice(3, item.comments.length)
+                              .map((record) => {
+                                return (
+                                  <h6 key={record._id}>
+                                    <div className="row mt-1">
+                                      <div className="col-10">
+                                        <span
+                                          style={{
+                                            fontWeight: "bolder",
+                                            marginRight: "2%",
+                                          }}
+                                        >
+                                          {record.postedBy.name}
+                                        </span>
+                                        {record.text}
+                                      </div>
+                                      <div className="col-2">
+                                        {record.postedBy._id === state._id && (
+                                          <span data-tip="delete comment">
+                                            <i
+                                              className="material-icons"
+                                              style={{
+                                                cursor: "pointer",
+                                                color: "red",
+                                                marginRight: "2%",
+                                              }}
+                                              onClick={() => {
+                                                deleteComment(
+                                                  item._id,
+                                                  record._id,
+                                                );
+                                              }}
+                                            >
+                                              delete
+                                            </i>
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </h6>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      </>
+                    )}
+
                     <form
                       onSubmit={(e) => {
                         e.preventDefault();
@@ -323,29 +450,56 @@ const Home = () => {
                     >
                       <div className="row">
                         <div className="input-field col-9 col-md-10">
-                          <i class="material-icons prefix">create</i>
+                          <i
+                            className="material-icons prefix"
+                            style={{ marginTop: "1.5%" }}
+                          >
+                            comment
+                          </i>
                           <input type="text" placeholder="add a comment" />
                         </div>
-                        <div className="input-field col-3 col-md-2">
-                          <button className="btn btn-secondary">Post</button>
+                        <div className="input-field col-3 col-md-1">
+                          <button
+                            href="#"
+                            data-tip="Post comment"
+                            className="btn-floating #1e88e5 blue darken-1 text-darken-5 pulse"
+                            style={{ outline: "none" }}
+                          >
+                            <i className="material-icons right white-text ">
+                              send
+                            </i>
+                          </button>
                         </div>
                       </div>
                     </form>
                   </div>
+                  <ReactTooltip />
                 </div>
               );
             })}
           </div>
         ) : (
-          <div className="empty offset-3 mt-5">
-            <div>
+          <div>
+            <div className="empty offset-3 mt-5 offset-md-4">
               <i className="fa fa-frown-o fa-5x offset-1"></i>
             </div>
-            <div>No Saved posts Yet</div>
+            <div
+              className="col-12 offset-1 offset-md-4"
+              style={{ fontSize: "250%" }}
+            >
+              No User posted Yet
+            </div>
           </div>
         )
       ) : (
-        <Loading />
+        <>
+          <Online>
+            <Loading />
+          </Online>
+          <Offline>
+            <Nonet />
+          </Offline>
+        </>
       )}
     </>
   );
