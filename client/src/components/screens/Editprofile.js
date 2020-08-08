@@ -100,7 +100,7 @@ const EditProfile = () => {
             <h2>Edit Profile</h2>
             <img
               data-tip="click on camera to change profile pic"
-              className="offset-2 offset-md-3"
+              className="offset-md-3 edpic"
               src={state && state.pic}
               alt=""
               style={{

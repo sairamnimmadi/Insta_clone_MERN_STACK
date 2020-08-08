@@ -367,29 +367,28 @@ const Home = () => {
                     })}
                     {item.comments.length > 3 && (
                       <>
-                        <button
-                          className="btn btn-secondary"
+                        <span
                           data-toggle="collapse"
                           data-target="#collapseExample"
-                          style={{ color: "white" }}
+                          style={{ color: "black" }}
                           onClick={() => {
                             setExtracomments(!extracomments);
                           }}
                         >
                           {extracomments ? (
                             <>
-                              <h6>
-                                View {item.comments.length - 3}{" "}
+                              <p style={{ fontWeight: "bold" }}>
+                                View all {item.comments.length - 3}{" "}
                                 {item.comments.length - 3 > 1
-                                  ? "more comments"
-                                  : "more comment"}
+                                  ? "comments"
+                                  : "comment"}
                                 <i className="fa fa-sort-down ml-2"></i>
-                              </h6>
+                              </p>
                             </>
                           ) : (
                             <i className="fa fa-sort-up"></i>
                           )}
-                        </button>
+                        </span>
                         <div className="collapse" id="collapseExample">
                           <div className="card card-body">
                             {item.comments

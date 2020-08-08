@@ -77,12 +77,12 @@ const NavBar = () => {
         <li key="4">
           <Link to="/myfollowingposts" className="sidenav-close">
             <span
-              class="fa-stack stack"
+              className="fa-stack stack"
               data-tip="My following posts"
               style={{ fontSize: "93%" }}
             >
-              <i class="fa fa-users fa-stack-1x"></i>
-              <i class="fa fa-sticky-note-o fa-stack-2x"></i>
+              <i className="fa fa-users fa-stack-1x"></i>
+              <i className="fa fa-sticky-note-o fa-stack-2x"></i>
             </span>
           </Link>
         </li>,
@@ -147,11 +147,10 @@ const NavBar = () => {
         </li>,
 
         <li key="9" className="sidenav-close">
-          <Link>
+          <Link className="modal-trigger" data-target="modal1">
             <i
-              data-target="modal1"
               data-tip="search users"
-              className="modal-trigger fa fa-search"
+              className="fa fa-search"
               style={{ fontSize: "150%" }}
             ></i>
             <span style={{ marginLeft: "-20px" }}>Search</span>
@@ -197,12 +196,12 @@ const NavBar = () => {
         <li key="4">
           <Link to="/myfollowingposts" className="sidenav-close">
             <span
-              class="fa-stack stack"
+              className="fa-stack stack"
               data-tip="My following posts"
               style={{ fontSize: "93%" }}
             >
-              <i class="fa fa-users fa-stack-1x"></i>
-              <i class="fa fa-sticky-note-o fa-stack-2x"></i>
+              <i className="fa fa-users fa-stack-1x"></i>
+              <i className="fa fa-sticky-note-o fa-stack-2x"></i>
             </span>
             <span style={{ marginLeft: "15px" }}>My Following Posts</span>
           </Link>

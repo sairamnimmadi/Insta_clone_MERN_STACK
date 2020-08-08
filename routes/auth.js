@@ -173,7 +173,7 @@ router.post("/newpassword", (req, res) => {
       }
       bcrypt.hash(newpassword, 13).then((hashedPassword) => {
         user.password = hashedPassword;
-        user.token = undefined;
+        user.resetToken = undefined;
         user.expireToken = undefined;
         user.save().then((savedUser) => {
           res.json({ message: "Password Updated Successfully" });
